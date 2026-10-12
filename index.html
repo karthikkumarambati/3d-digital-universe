@@ -32,6 +32,19 @@
   <canvas id="universeCanvas" aria-label="Interactive 3D cyberpunk universe background"></canvas>
   <div class="noise" aria-hidden="true"></div>
   <div class="scanlines" aria-hidden="true"></div>
+  <div class="rift-flash" id="riftFlash" aria-hidden="true"></div>
+  <div class="interaction-toast" id="interactionToast" role="status" aria-live="polite"></div>
+  <aside class="live-hud" aria-label="Live universe telemetry">
+    <div class="hud-top"><span class="hud-pulse"></span> LIVE TELEMETRY <span id="hudStatus">STABLE</span></div>
+    <div class="hud-readout"><span>ENERGY</span><div class="meter"><i id="energyMeter"></i></div><b id="energyValue">78%</b></div>
+    <div class="hud-readout"><span>DIMENSION</span><b id="dimensionValue">N-07</b></div>
+    <div class="hud-readout"><span>ENTROPY</span><b id="entropyValue">0.024</b></div>
+  </aside>
+  <div class="interaction-dock" aria-label="Universe actions">
+    <button id="riftJump" class="dock-action dock-primary"><span class="dock-icon">⤢</span><span>RIFT JUMP</span><kbd>R</kbd></button>
+    <button id="scanWorld" class="dock-action"><span class="dock-icon">⌕</span><span>SCAN SIGNAL</span><kbd>S</kbd></button>
+    <button id="pulseCore" class="dock-action"><span class="dock-icon">✳</span><span>PULSE CORE</span><kbd>P</kbd></button>
+  </div>
 
   <header class="site-header">
     <a class="brand" href="#home" aria-label="Digital Universe home"><span class="brand-symbol">◈</span><span>DIGITAL<span class="brand-accent">UNIVERSE</span></span></a>
@@ -55,6 +68,7 @@
         <div class="hero-actions">
           <a class="button button-primary" href="#experience">Explore universe <span>↘</span></a>
           <button class="button button-quiet" id="focusPlanet"><span class="play-icon">▶</span> Meet the core</button>
+        <button class="button button-quiet anomaly-button" id="anomalyButton"><span class="anomaly-spark">✧</span> Trigger anomaly</button>
         </div>
         <div class="hero-stats">
           <div><strong>01<span> / </span>∞</strong><small>NEW DIMENSIONS</small></div>
@@ -129,6 +143,7 @@
 
   <footer class="site-footer"><a class="brand" href="#home"><span class="brand-symbol">◈</span><span>DIGITAL<span class="brand-accent">UNIVERSE</span></span></a><p>AN EXPERIMENT IN DIGITAL SPACE.</p><span>© <span id="year"></span> DIGITAL UNIVERSE</span></footer>
   <div class="cursor-coordinates" id="cursorCoordinates">X 000 / Y 000</div>
+  <div class="interaction-hint" id="interactionHint">TIP: PRESS R TO RIFT JUMP</div>
   <button class="sound-toggle" id="motionToggle" aria-label="Toggle reduced motion" title="Toggle motion"><span>✳</span><b>MOTION ON</b></button>
 </body>
 </html>
