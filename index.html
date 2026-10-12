@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#070711">
+  <meta name="description" content="Explore the Digital Universe — an interactive cyberpunk 3D experience built with Three.js and GSAP.">
+  <title>Digital Universe — Explore Beyond</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js",
+        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.169.0/examples/jsm/"
+      }
+    }
+  </script>
+  <script defer src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+  <script type="module" src="js/main.js"></script>
+</head>
+<body>
+  <div class="boot-screen" id="bootScreen" aria-live="polite">
+    <div class="boot-mark">DU<span>_</span></div>
+    <div class="boot-line"><span id="bootProgress"></span></div>
+    <p>INITIALIZING DIGITAL UNIVERSE <b id="bootPercent">00</b></p>
+  </div>
+
+  <canvas id="universeCanvas" aria-label="Interactive 3D cyberpunk universe background"></canvas>
+  <div class="noise" aria-hidden="true"></div>
+  <div class="scanlines" aria-hidden="true"></div>
+
+  <header class="site-header">
+    <a class="brand" href="#home" aria-label="Digital Universe home"><span class="brand-symbol">◈</span><span>DIGITAL<span class="brand-accent">UNIVERSE</span></span></a>
+    <button class="menu-toggle" id="menuToggle" aria-label="Toggle navigation" aria-expanded="false"><span></span><span></span></button>
+    <nav class="main-nav" id="mainNav">
+      <a href="#home" class="nav-link active">Home</a>
+      <a href="#experience" class="nav-link">Experience</a>
+      <a href="#discover" class="nav-link">Discover</a>
+      <a href="#about" class="nav-link">About</a>
+    </nav>
+    <a class="header-cta" href="#discover">Enter the grid <span>↗</span></a>
+  </header>
+
+  <main>
+    <section class="hero section" id="home">
+      <div class="hero-grid" aria-hidden="true"></div>
+      <div class="hero-copy">
+        <div class="eyebrow"><span class="status-dot"></span> SYSTEM ONLINE <span class="eyebrow-divider">/</span> SECTOR 07</div>
+        <h1>REALITY IS<br>JUST THE <span class="gradient-text">BEGINNING.</span></h1>
+        <p class="hero-description">A living digital dimension where imagination meets technology. Explore a universe shaped by code, light, and limitless possibility.</p>
+        <div class="hero-actions">
+          <a class="button button-primary" href="#experience">Explore universe <span>↘</span></a>
+          <button class="button button-quiet" id="focusPlanet"><span class="play-icon">▶</span> Meet the core</button>
+        </div>
+        <div class="hero-stats">
+          <div><strong>01<span> / </span>∞</strong><small>NEW DIMENSIONS</small></div>
+          <div><strong>60<span> FPS</span></strong><small>REAL-TIME RENDER</small></div>
+          <div><strong>100<span>%</span></strong><small>PURE IMAGINATION</small></div>
+        </div>
+      </div>
+      <div class="hero-side-note"><span class="side-line"></span><span>SCROLL TO DESCEND</span><span class="side-coordinate">35° 41' 22.2"N</span></div>
+      <div class="hero-orbit-label"><span class="label-pulse"></span><span>CORE // 001</span><b>UNKNOWN SIGNAL</b></div>
+      <a class="scroll-cue" href="#experience" aria-label="Scroll to experience"><span></span>SCROLL TO EXPLORE</a>
+    </section>
+
+    <section class="experience section" id="experience">
+      <div class="section-heading">
+        <div><p class="eyebrow">01 / THE EXPERIENCE</p><h2>STEP BEYOND<br><span class="gradient-text">THE ORDINARY.</span></h2></div>
+        <p class="section-intro">Not another page. A new perspective. Move your cursor, explore the space, and discover the details hidden between dimensions.</p>
+      </div>
+      <div class="feature-grid">
+        <article class="feature-card feature-card-large">
+          <div class="card-index">FEATURE / 001</div><div class="feature-icon">✳</div>
+          <h3>Living<br>Environments</h3><p>Procedurally generated stars, atmospheric planets, and a world that never stops moving.</p><span class="card-arrow">↗</span>
+          <div class="card-orbit orbit-one"></div><div class="card-orbit orbit-two"></div>
+        </article>
+        <article class="feature-card">
+          <div class="card-index">FEATURE / 002</div><div class="feature-icon">⌁</div>
+          <h3>Fluid Motion</h3><p>Scroll-driven transitions and motion design that responds to your journey.</p><span class="card-arrow">↗</span>
+        </article>
+        <article class="feature-card">
+          <div class="card-index">FEATURE / 003</div><div class="feature-icon">⌘</div>
+          <h3>Built with Code</h3><p>WebGL-powered 3D, carefully tuned shaders, and a lightweight vanilla JavaScript core.</p><span class="card-arrow">↗</span>
+        </article>
+      </div>
+    </section>
+
+    <section class="discover section" id="discover">
+      <div class="section-heading discover-heading">
+        <div><p class="eyebrow">02 / SELECT YOUR DESTINATION</p><h2>WORLDS WAITING<br><span class="gradient-text">TO BE FOUND.</span></h2></div>
+        <p class="section-intro">Every signal leads somewhere. Select a world to tune the universe's energy.</p>
+      </div>
+      <div class="world-grid">
+        <button class="world-card world-cyan active" data-world="0">
+          <span class="world-number">WORLD_01</span><span class="world-orb orb-cyan"></span><span class="world-title">NEON GENESIS</span><span class="world-meta">ORIGIN / HIGH ENERGY</span><span class="world-select">SELECT WORLD ↗</span>
+        </button>
+        <button class="world-card world-purple" data-world="1">
+          <span class="world-number">WORLD_02</span><span class="world-orb orb-purple"></span><span class="world-title">VOID BLOOM</span><span class="world-meta">UNKNOWN / DEEP SPACE</span><span class="world-select">SELECT WORLD ↗</span>
+        </button>
+        <button class="world-card world-pink" data-world="2">
+          <span class="world-number">WORLD_03</span><span class="world-orb orb-pink"></span><span class="world-title">CHROME DUSK</span><span class="world-meta">FRONTIER / LOW GRAVITY</span><span class="world-select">SELECT WORLD ↗</span>
+        </button>
+      </div>
+      <div class="signal-panel"><span class="signal-icon">⌁</span><div><small>INCOMING TRANSMISSION</small><p id="signalText">Neon Genesis online. The core is stable. Begin your exploration.</p></div><span class="signal-live"><i></i> LIVE SIGNAL</span></div>
+    </section>
+
+    <section class="about section" id="about">
+      <div class="about-visual">
+        <div class="about-ring ring-a"></div><div class="about-ring ring-b"></div><div class="about-core">DU<span>+</span></div>
+        <div class="orbit-tag tag-a">CREATIVE ENGINE</div><div class="orbit-tag tag-b">THREE.JS / WEBGL</div><div class="orbit-tag tag-c">VERSION 1.0.0</div>
+      </div>
+      <div class="about-copy"><p class="eyebrow">03 / THE ARCHITECTURE</p><h2>DESIGNED IN<br><span class="gradient-text">ANOTHER DIMENSION.</span></h2>
+        <p>Digital Universe is an experimental frontend project exploring the intersection of immersive 3D graphics, cinematic animation, and responsive interface design.</p>
+        <div class="tech-list"><span>HTML5</span><span>CSS3</span><span>JAVASCRIPT</span><span>THREE.JS</span><span>GSAP</span><span>WEBGL</span></div>
+        <a class="text-link" href="https://github.com/" target="_blank" rel="noreferrer">EXPLORE THE SOURCE <span>↗</span></a>
+      </div>
+    </section>
+
+    <section class="final-cta section">
+      <p class="eyebrow">SIGNAL FOUND / CONNECTION STABLE</p><h2>YOUR NEXT<br><span class="gradient-text">WORLD AWAITS.</span></h2>
+      <a class="button button-primary" href="#home">Return to the core <span>↑</span></a>
+      <div class="cta-crosshair">+</div>
+    </section>
+  </main>
+
+  <footer class="site-footer"><a class="brand" href="#home"><span class="brand-symbol">◈</span><span>DIGITAL<span class="brand-accent">UNIVERSE</span></span></a><p>AN EXPERIMENT IN DIGITAL SPACE.</p><span>© <span id="year"></span> DIGITAL UNIVERSE</span></footer>
+  <div class="cursor-coordinates" id="cursorCoordinates">X 000 / Y 000</div>
+  <button class="sound-toggle" id="motionToggle" aria-label="Toggle reduced motion" title="Toggle motion"><span>✳</span><b>MOTION ON</b></button>
+</body>
+</html>
