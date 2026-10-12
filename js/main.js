@@ -12,6 +12,9 @@ let animationEnabled = !prefersReducedMotion;
 let targetX = 0, targetY = 0, pointerX = 0, pointerY = 0;
 let scrollProgress = 0;
 let activeWorld = 0;
+let toastTimer = null;
+let energy = 78;
+let anomalyActive = false;
 const clock = new THREE.Clock();
 const worldColors = [0x4dfcff, 0xa66bff, 0xff4fd8];
 const worldMessages = [
@@ -197,6 +200,7 @@ function updateWorld(index) {
     card.setAttribute('aria-pressed', String(i === index));
   });
   document.querySelector('#signalText').textContent = worldMessages[index];
+  if (typeof updateTelemetry === 'function') updateTelemetry('STABLE');
   if (window.gsap && ringGroup) {
     gsap.to(ringGroup.rotation, { y: ringGroup.rotation.y + Math.PI * 0.5, duration: 1.1, ease: 'power2.inOut' });
     gsap.fromTo(core.scale, { x: 0.92, y: 0.92, z: 0.92 }, { x: 1, y: 1, z: 1, duration: 0.7, ease: 'elastic.out(1, 0.5)' });
@@ -258,7 +262,24 @@ function initInteractions() {
   });
   document.querySelector('#focusPlanet').addEventListener('click', () => {
     document.querySelector('#experience').scrollIntoView({ behavior: animationEnabled ? 'smooth' : 'auto' });
-    if (window.gsap && animationEnabled) gsap.to(camera.position, { z: 7, duration: 1.2, yoyo: true, repeat: 1, ease: 'power2.inOut' });
+    pulseCore();
+    showToast('CORE LINK ESTABLISHED // WELCOME, EXPLORER');
+  });
+  document.querySelector('#riftJump').addEventListener('click', riftJump);
+  document.querySelector('#scanWorld').addEventListener('click', scanSignal);
+  document.querySelector('#pulseCore').addEventListener('click', pulseCore);
+  document.querySelector('#anomalyButton').addEventListener('click', toggleAnomaly);
+  window.addEventListener('keydown', event => {
+    if (event.altKey || event.ctrlKey || event.metaKey || /INPUT|TEXTAREA/.test(document.activeElement?.tagName || '')) return;
+    const key = event.key.toLowerCase();
+    if (key === 'r') riftJump();
+    if (key === 's') scanSignal();
+    if (key === 'p') pulseCore();
+    if (key === 'a') toggleAnomaly();
+    if (key === 'escape') {
+      document.querySelector('#mainNav').classList.remove('is-open');
+      document.querySelector('#menuToggle').setAttribute('aria-expanded', 'false');
+    }
   });
   const toggle = document.querySelector('#menuToggle');
   const nav = document.querySelector('#mainNav');
@@ -289,6 +310,133 @@ function updateActiveNav() {
   document.querySelectorAll('.nav-link').forEach(link => link.classList.toggle('active', link.getAttribute('href') === `#${current}`));
 }
 
+
+function showToast(message) {
+  const toast = document.querySelector('#interactionToast');
+  toast.textContent = message;
+  toast.classList.add('is-visible');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => toast.classList.remove('is-visible'), 2600);
+}
+
+function flashRift() {
+  const flash = document.querySelector('#riftFlash');
+  flash.classList.remove('fire');
+  // Force a style read so the animation can be retriggered.
+  void flash.offsetWidth;
+  flash.classList.add('fire');
+}
+
+function updateTelemetry(status = 'STABLE') {
+  document.querySelector('#hudStatus').textContent = status;
+  document.querySelector('#energyValue').textContent = `${Math.round(energy)}%`;
+  document.querySelector('#energyMeter').style.width = `${Math.max(8, Math.min(100, energy))}%`;
+  document.querySelector('#dimensionValue').textContent = ['N-07', 'V-13', 'C-09'][activeWorld];
+  document.querySelector('#entropyValue').textContent = (Math.random() * 0.08 + (anomalyActive ? 0.16 : 0.01)).toFixed(3);
+}
+
+function riftJump() {
+  const nextWorld = (activeWorld + 1 + Math.floor(Math.random() * 2)) % worldColors.length;
+  updateWorld(nextWorld);
+  energy = Math.max(22, energy - 7 + Math.random() * 12);
+  updateTelemetry('JUMPING');
+  flashRift();
+  burstParticles(worldColors[nextWorld]);
+  if (window.gsap && camera && ringGroup && animationEnabled) {
+    const startZ = camera.position.z;
+    gsap.timeline()
+      .to(camera.position, { z: Math.max(4.8, startZ - 3.2), duration: 0.22, ease: 'power4.in' })
+      .to(camera.position, { z: 10, duration: 0.85, ease: 'expo.out' });
+    gsap.fromTo(ringGroup.scale, { x: 0.55, y: 0.55, z: 0.55 }, { x: 1, y: 1, z: 1, duration: 1.05, ease: 'elastic.out(1, 0.45)' });
+  }
+  setTimeout(() => updateTelemetry('STABLE'), 950);
+  showToast(`RIFT JUMP COMPLETE // DIMENSION ${['N-07', 'V-13', 'C-09'][nextWorld]}`);
+}
+
+function scanSignal() {
+  const names = ['GHOST FREQUENCY', 'ANCIENT DATA ECHO', 'UNMAPPED LIFE SIGN', 'QUANTUM RESONANCE', 'UNKNOWN TRANSMISSION'];
+  const pick = names[Math.floor(Math.random() * names.length)];
+  const strength = Math.floor(40 + Math.random() * 60);
+  energy = Math.min(100, energy + 4 + Math.random() * 9);
+  document.querySelector('#signalText').textContent = `${pick} detected at ${strength}% signal strength. Coordinates synchronized with ${['Neon Genesis', 'Void Bloom', 'Chrome Dusk'][activeWorld]}.`;
+  updateTelemetry('SCANNING');
+  if (window.gsap && animationEnabled) {
+    gsap.fromTo('#signalText', { opacity: 0.25, x: 8 }, { opacity: 1, x: 0, duration: 0.55, ease: 'power2.out' });
+  }
+  burstParticles(worldColors[activeWorld], 36);
+  setTimeout(() => updateTelemetry('STABLE'), 750);
+  showToast(`SIGNAL LOCKED // ${pick} // ${strength}%`);
+}
+
+function pulseCore() {
+  energy = Math.max(10, energy - 3 + Math.random() * 8);
+  updateTelemetry('ENERGY SURGE');
+  flashRift();
+  burstParticles(worldColors[activeWorld], 90);
+  if (core && window.gsap && animationEnabled) {
+    gsap.killTweensOf(core.scale);
+    gsap.fromTo(core.scale, { x: 1.18, y: 1.18, z: 1.18 }, { x: 1, y: 1, z: 1, duration: 1.05, ease: 'elastic.out(1, 0.35)' });
+  }
+  if (coreGlow && window.gsap && animationEnabled) {
+    gsap.fromTo(coreGlow.material, { opacity: 0.95 }, { opacity: 0.35, duration: 1.1, ease: 'power2.out' });
+  }
+  setTimeout(() => updateTelemetry('STABLE'), 800);
+  showToast('CORE PULSE RELEASED // ENERGY WAVE PROPAGATING');
+}
+
+function toggleAnomaly() {
+  anomalyActive = !anomalyActive;
+  document.body.classList.toggle('anomaly-mode', anomalyActive);
+  if (anomalyActive) {
+    updateWorld(2);
+    flashRift();
+    burstParticles(0xff4fd8, 130);
+    updateTelemetry('ANOMALY');
+    showToast('ANOMALY DETECTED // REALITY FILTERS DISABLED');
+  } else {
+    updateTelemetry('STABLE');
+    showToast('REALITY STABILIZED // NORMAL SPACE RESTORED');
+  }
+}
+
+function burstParticles(color = 0x4dfcff, count = 72) {
+  if (!scene) return;
+  const positions = new Float32Array(count * 3);
+  const velocities = [];
+  for (let i = 0; i < count; i++) {
+    positions[i * 3] = ringGroup ? ringGroup.position.x : 0;
+    positions[i * 3 + 1] = ringGroup ? ringGroup.position.y : 0;
+    positions[i * 3 + 2] = ringGroup ? ringGroup.position.z : -2;
+    velocities.push(new THREE.Vector3((Math.random() - 0.5) * 0.24, (Math.random() - 0.5) * 0.24, (Math.random() - 0.5) * 0.24));
+  }
+  const geometry = new THREE.BufferGeometry();
+  geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+  const material = new THREE.PointsMaterial({ color, size: 0.07, transparent: true, opacity: 1, blending: THREE.AdditiveBlending, depthWrite: false });
+  const particles = new THREE.Points(geometry, material);
+  scene.add(particles);
+  const born = clock.getElapsedTime();
+  const tick = () => {
+    if (!particles.parent) return;
+    const elapsed = clock.getElapsedTime() - born;
+    const attr = geometry.attributes.position;
+    for (let i = 0; i < count; i++) {
+      attr.array[i * 3] += velocities[i].x;
+      attr.array[i * 3 + 1] += velocities[i].y;
+      attr.array[i * 3 + 2] += velocities[i].z;
+    }
+    attr.needsUpdate = true;
+    material.opacity = Math.max(0, 1 - elapsed / 1.15);
+    if (elapsed >= 1.15) {
+      scene.remove(particles);
+      geometry.dispose();
+      material.dispose();
+      return;
+    }
+    requestAnimationFrame(tick);
+  };
+  requestAnimationFrame(tick);
+}
+
 function initGsap() {
   if (!window.gsap || prefersReducedMotion) {
     document.querySelectorAll('.reveal').forEach(el => { el.style.opacity = 1; el.style.transform = 'none'; });
@@ -317,6 +465,8 @@ function boot() {
       setTimeout(() => {
         bootScreen.classList.add('is-hidden');
         document.body.classList.remove('loading');
+        updateTelemetry('STABLE');
+        showToast('SYSTEM ONLINE // WELCOME TO THE DIGITAL UNIVERSE');
       }, 250);
     }
   }, 65);
